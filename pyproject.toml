@@ -1,0 +1,19 @@
+[project]
+name = "formula-converter"
+version = "1.0.0"
+description = "将 Word 文档中的纯文本数学公式自动识别并转换为 OMML 公式"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "python-docx>=1.2.0",
+    "lxml>=6.1.1",
+    "latex2mathml>=3.81.0",
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller>=6.20.0",
+]
+
+[tool.uv]
+default-groups = []

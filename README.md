@@ -1,91 +1,86 @@
-# 公式转换工具
+# WF Conversion Tool
 
-将 Word 文档中的纯文本数学公式自动识别并替换为 OMML 公式，保留原文档样式。
-
----
+将 Word 文档中的纯文本数学公式自动识别并转换为 OMML 公式，保留原样式。
 
 ## 功能
 
-- 基于 CJK 边界 + 数学特征自动识别公式
-- 纯文本 → LaTeX → MathML → OMML 全自动转换
-- 保留原格式（字体、缩进、行距）
-- 支持 .doc / .docx 输入
-- 通过 Word/WPS COM 自动修正公式字体
-- 转换失败自动跳过，不卡住
-- GUI / 命令行双模式
+- **自动识别公式**：从段落文本中识别数学公式片段，并转为 LaTeX。
+- **保留原样式**：在保留原文档样式的前提下，自动识别段落中的数学公式并替换为 OMML 公式。
+- **支持 .doc 转 .docx**：自动将 .doc 文件转为 .docx（使用 Word 或 WPS COM）。
+- **GUI 界面**：提供简单的图形用户界面，方便操作。
 
-## 快速开始
+## 安装
 
-**安装**（需要 Python 3.10+）
+### 环境要求
 
-```
-双击 install.bat
-```
+- [uv](https://docs.astral.sh/uv/) - Python 包管理器（若未安装，参考[官方安装指南](https://docs.astral.sh/uv/getting-started/installation/)）
+- Python >= 3.10
+- Microsoft Word 或 WPS Office（用于 .doc 转 .docx）
 
-**运行**
+### 初始化项目
 
-```
-.venv\Scripts\python.exe main.py
+```bash
+uv init
 ```
 
-**打包为 exe**
+### 构建环境
 
-```
-.venv\Scripts\python.exe build.py
-```
-
-生成 `dist/公式转换工具.exe`，单文件免安装运行。
-
-## 命令行
-
-```
-.venv\Scripts\python.exe src\replace_formulas.py 输入文件.docx
-.venv\Scripts\python.exe src\replace_formulas.py 输入文件.docx -o 输出文件.docx
+```bash
+uv sync
 ```
 
-不指定 `-o` 时默认输出 `输入文件名_公式版.docx`。
+## 使用
 
-## 识别规则
+### 运行 GUI
 
-| 规则 | 示例 |
-|------|------|
-| 数学符号 | `α+β`, `∫f(x)dx`, `∞` |
-| 上下标 | `x²`, `a₀`, `I_norm` |
-| 分数 | `a/b`, `ΔS/T` |
-| 关系符+变量 | `F=ma`, `p<0.05`, `PV=nRT` |
-| 算术表达式 | `2x+3y-5`, `a+b=c` |
-| 函数调用 | `f(x)=0`, `cos(θ)=1` |
+```bash
+uv run python main.py
+```
 
-**自动排除**
+### 打包为 EXE
 
-| 类型 | 示例 |
-|------|------|
-| 物理单位 | `km/s`, `N·m`, `μmol/L`, `s⁻¹` |
-| 单位赋值 | `λ=589nm`, `v₀=5m/s` |
-| 简单阈值 | `≥100`, `=3.5` |
-| 英文文本 | `the value > 0`, `and = 5` |
+```bash
+uv run python build.py
+```
+
+打包后的可执行文件位于 `dist/WF Conversion Tool.exe`。
 
 ## 项目结构
 
 ```
-main.py                       入口
-build.py                      打包
-install.bat                   安装依赖
-requirements.txt              依赖列表
-assets/
-  icon.ico / icon.svg         图标
-src/
-  formula_detector.py         公式识别 + LaTeX 转换
-  replace_formulas.py         文档处理核心
-  mathml_to_omml.py           MathML → OMML
-  formula_converter_gui.py    GUI
+formula-converter/
+├── main.py                      # 入口文件
+├── build.py                     # 打包脚本
+├── pyproject.toml               # 项目配置
+├── src/
+│   ├── formula_converter_gui.py # GUI 主逻辑
+│   ├── formula_detector.py      # 公式识别器
+│   ├── replace_formulas.py      # 公式替换核心逻辑
+│   └── mathml_to_omml.py      # MathML → OMML 转换器
+└── assets/
+    ├── icon.png
+    ├── icon.ico
+    └── icon.svg
 ```
 
-## 依赖
+## 核心模块
 
-| 包 | 用途 |
-|---|------|
-| python-docx | Word 文档读写 |
-| lxml | XML 处理 |
-| latex2mathml | LaTeX → MathML |
-| pyinstaller | 打包为 exe |
+### formula_detector.py
+公式识别器，从段落文本中识别数学公式片段，并转为 LaTeX。核心策略：中文字符（CJK）是天然的公式边界。
+
+### replace_formulas.py
+在保留原文档样式的前提下，自动识别段落中的数学公式并替换为 OMML 公式。
+
+### mathml_to_omml.py
+将 latex2mathml 生成的 MathML XML 转换为 Word OMML XML。
+
+## 技术栈
+
+- [python-docx](https://python-docx.readthedocs.io/) - 读写 Word 文档
+- [lxml](https://lxml.de/) - XML 处理
+- [latex2mathml](https://github.com/roniemartinez/latex2mathml) - LaTeX 转 MathML
+- [PyInstaller](https://pyinstaller.org/) - 打包为 EXE
+
+## 许可证
+
+MIT
