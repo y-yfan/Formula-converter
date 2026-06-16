@@ -2,6 +2,7 @@
 """打包脚本：生成单文件 exe"""
 import PyInstaller.__main__
 import os
+import shutil
 
 # 查找 latex2mathml 的 unimathsymbols.txt
 import latex2mathml
@@ -40,14 +41,14 @@ excludes = [
 for ex in excludes:
     args.append(f'--exclude-module={ex}')
 
-# UPX 压缩（如果可用）
-upx_dir = os.path.join(os.path.dirname(__file__), 'upx')
-if os.path.isdir(upx_dir):
-    args.append(f'--upx-dir={upx_dir}')
-
 # 如果存在图标文件则添加
 icon_file = os.path.join(os.path.dirname(__file__), 'assets', 'icon.ico')
 if os.path.exists(icon_file):
     args.append(f'--icon={icon_file}')
 
 PyInstaller.__main__.run(args)
+
+# 打包完成后清理 build 临时目录
+build_dir = os.path.join(os.path.dirname(__file__), 'build')
+if os.path.isdir(build_dir):
+    shutil.rmtree(build_dir)
